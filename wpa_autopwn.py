@@ -49,8 +49,7 @@ if os.stat('/tmp/cleaned.cap').st_size == 24:
     print '[-] No WPA/WPA2 handshakes captured...'
     exit(-1)
 
-p = open_offline(argv[1])
-
+p = open_offline('/tmp/cleaned.cap')
 
 # filter beacons
 p.filter = 'link[0] == 0x80'
@@ -71,7 +70,7 @@ else:
     connect_db(False)
 
 for bssid in bssid_list:
-    cursor.execute('SELECT id FROM entries WHERE bssid = ?', bssid)
+    cursor.execute('SELECT id FROM entries WHERE bssid = ?', (bssid,))
     if cursor.fetchone() is None:
         # this is a new bssid
         print '[+] Using bssid = %s' % bssid
@@ -80,7 +79,7 @@ for bssid in bssid_list:
         # send it to the crackq
         s = subprocess.call([CRACKQ_CLI, '-t', 'wpa', '/tmp/'+bssid+'.hccap']) 
 
-        cursor.execute('INSERT INTO entries(bssid) VALUES (?)', (bssid))
+        cursor.execute('INSERT INTO entries(bssid) VALUES (?)', (bssid,))
         db.commit()
     else:
         print '[-] Already tried this bssid...'
