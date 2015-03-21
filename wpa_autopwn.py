@@ -43,7 +43,8 @@ if not argv[1:]:
 
 f = open(os.devnull, 'w')
 
-s = subprocess.call([WPACLEAN_BIN, '/tmp/cleaned.cap'] + glob.glob(' '.join(argv[1:])), stdout=f, stderr=f) 
+s = subprocess.Popen([WPACLEAN_BIN, '/tmp/cleaned.cap'] + argv[1:], stdout=f, stderr=f)
+s.wait()
 
 if os.stat('/tmp/cleaned.cap').st_size == 24:
     print '[-] No WPA/WPA2 handshakes captured...'
